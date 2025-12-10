@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: karate-automation
+  jackson:
+    default-property-inclusion: non_null
+  datasource:
+    initialization-mode: always
+
+server:
+  port: 0
+
+multidb:
+  main:
+    url: jdbc:h2:mem:main;MODE=MSSQLServer;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'classpath:schema-main.sql'\;RUNSCRIPT FROM 'classpath:data-main.sql'
+    username: sa
+    password: password
+    driver-class-name: org.h2.Driver
+  reporting:
+    url: jdbc:h2:mem:reporting;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'classpath:schema-reporting.sql'\;RUNSCRIPT FROM 'classpath:data-reporting.sql'
+    username: sa
+    password: password
+    driver-class-name: org.h2.Driver
+
+cosmos:
+  database: karate-demo
