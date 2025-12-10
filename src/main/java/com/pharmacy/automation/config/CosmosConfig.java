@@ -4,7 +4,7 @@ import com.azure.cosmos.CosmosClientBuilder;
 import com.pharmacy.automation.cosmos.AzureCosmosDbService;
 import com.pharmacy.automation.cosmos.CosmosDbService;
 import com.pharmacy.automation.cosmos.InMemoryCosmosDbService;
-import com.pharmacy.automation.util.SampleDataUtils;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -33,9 +33,9 @@ public class CosmosConfig {
         }
         log.info("Using in-memory Cosmos DB service for tests");
         InMemoryCosmosDbService service = new InMemoryCosmosDbService(databaseName);
-        service.upsert("users", SampleDataUtils.cosmosUser("cosmos-user-1", "cosmos@example.com", "gold"));
-        service.upsert("users", SampleDataUtils.cosmosUser("cosmos-user-2", "shadow@example.com", "silver"));
-        service.upsert("orders", SampleDataUtils.cosmosOrder("order-1", "cosmos-user-1", 99.99));
+        service.upsert("users", Map.of("id", "cosmos-user-1", "email", "cosmos@example.com", "tier", "gold"));
+        service.upsert("users", Map.of("id", "cosmos-user-2", "email", "shadow@example.com", "tier", "silver"));
+        service.upsert("orders", Map.of("id", "order-1", "userId", "cosmos-user-1", "total", 99.99));
         return service;
     }
 }

@@ -1,13 +1,9 @@
 package com.pharmacy.automation.test.runner;
 
-import com.intuit.karate.Results;
-import com.intuit.karate.Runner;
+import com.intuit.karate.junit5.Karate;
 import com.pharmacy.automation.AutomationApplication;
-import com.pharmacy.automation.test.hooks.LoggingHook;
-import com.pharmacy.automation.test.reporting.ExtentReportGenerator;
 import com.pharmacy.automation.test.support.SpringContextHolder;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -30,13 +26,8 @@ public class UsersRunner {
         System.setProperty("karate.server.port", String.valueOf(port));
     }
 
-    @Test
-    void runUsers() {
-        Results results = Runner.path("classpath:features/users/users.feature")
-                .reportDir("target/karate-reports")
-                .outputCucumberJson(true)
-                .hook(new LoggingHook())
-                .parallel(1);
-        ExtentReportGenerator.generate(results.getReportDir(), results);
+    @Karate.Test
+    Karate runUsers() {
+        return Karate.run("classpath:features/users/users.feature");
     }
 }

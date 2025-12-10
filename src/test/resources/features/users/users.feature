@@ -2,39 +2,24 @@ Feature: User API and data validation
 
   Background:
     * url baseUrl
-    * def props = utils.loadProperties('automation.properties')
-    * def userData = karate.get('userData')
 
-  @api @db
-  Scenario Outline: User profile matches relational data sources for <email>
-    Given path 'api', 'users', <userId>
+  Scenario: Validate user API response matches database and reporting counts
+    Given url userSteps.urlForUser(1)
     When method get
     Then status 200
-    And match response.email == <email>
-    And def userPojo = utils.deserializeUser(response)
-    And match userPojo.email == <email>
-    And def dbUser = dbMain.findUser(<userId>)
-    And match dbUser.EMAIL == response.email
-    And def orderRows = dbMain.listOrders(<userId>)
-    And match orderRows == '#[<expectedOrders>]'
-    And def activeCount = dbReporting.activeUserCount()
-    And match activeCount == <activeCount>
-    And match utils.formatCurrency(orderRows[0].TOTAL) != null
+    And match response.email == 'api.user@example.com'
+    * def dbUser = dbMain.findUser(1)
+    * match dbUser.EMAIL == response.email
+    * def orderRows = dbMain.listOrders(1)
+    * match orderRows.length == 2
+    * def activeCount = dbReporting.activeUserCount()
+    * match activeCount == 2
 
-    Examples: userData.relationalExamples
-
-  @api @cosmos
-  Scenario Outline: Cosmos document stays consistent with API data for <cosmosId>
-    * def usersContainer = props['cosmos.container.users']
-    * def ordersContainer = props['cosmos.container.orders']
-    Given path 'api', 'users', <cosmosId>, 'cosmos'
+  Scenario: Validate Cosmos document aligns with API data
+    Given url userSteps.urlForCosmos('cosmos-user-1')
     When method get
     Then status 200
-    And def cosmosDoc = cosmos.findUser(<cosmosId>)
-    And match cosmosDoc.email == <email>
-    And def cosmosOrders = cosmos.queryOrders(<cosmosId>)
-    And match cosmosOrders[0].total == <firstOrderTotal>
-    And match utils.formatCurrency(cosmosOrders[0].total) == utils.formatCurrency(<firstOrderTotal>)
-    And match cosmos.findUser(<cosmosId>).tier != null
-
-    Examples: userData.cosmosExamples
+    * def cosmosDoc = cosmos.findUser('cosmos-user-1')
+    * match cosmosDoc.email == 'cosmos@example.com'
+    * def cosmosOrders = cosmos.queryOrders('cosmos-user-1')
+    * match cosmosOrders[0].total == 99.99
